@@ -1,3 +1,3 @@
 # debox_contracts
 
-add release branch
+This is Debox's public smart contract repository.
