@@ -68,9 +68,9 @@ contract TestDBXLookup is Test {
     uint256 amount = 100000 * 1e18;
     uint256 releaseTimes = 10;
 
-    oneLock(alice, amount, 1 hours, releaseTimes);
-    oneLock(alice, amount, 1.5 hours, releaseTimes);
-    oneLock(alice, amount, 3.1 hours, releaseTimes);
+    oneLock(alice, amount, 1 hours, 10);
+    oneLock(alice, amount, 1.5 hours, 5);
+    oneLock(alice, amount, 3.1 hours, 8);
 
     for (uint256 i = 0; i < releaseTimes; i++) {
       skip(3.1 hours);
