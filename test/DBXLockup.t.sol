@@ -64,6 +64,26 @@ contract TestDBXLookup is Test {
     assertEq(balance, 0);
   }
 
+  function testLockManyTimes() public {
+    uint256 amount = 100000 * 1e18;
+    uint256 releaseTimes = 10;
+
+    oneLock(alice, amount, 1 hours, releaseTimes);
+    oneLock(alice, amount, 1.5 hours, releaseTimes);
+    oneLock(alice, amount, 3.1 hours, releaseTimes);
+
+    for (uint256 i = 0; i < releaseTimes; i++) {
+      skip(3.1 hours);
+      oneRelease(alice, true);
+      console.log("alice balance:", dbx.balanceOf(alice));
+    }
+
+    skip(360 days);
+    (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
+    assertEq(releaseable, 0);
+    assertEq(balance, 0);
+  }
+
   function testLock12Months() public {
     uint256 amount = 2e9 ether;
     uint256 interval = 30 days;
