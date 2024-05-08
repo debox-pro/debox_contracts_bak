@@ -1,3 +1,3 @@
 # debox_contracts
 
-This is Debox's public smart contract repository.
+This is DeBox's public smart contract repository.

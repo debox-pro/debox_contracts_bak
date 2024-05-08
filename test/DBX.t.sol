@@ -12,7 +12,7 @@ contract DBXTest is Test {
   }
 
   function testInfo() public {
-    assertEq(dbx.name(), "DeboxToken");
+    assertEq(dbx.name(), "DeBoxToken");
     assertEq(dbx.symbol(), "DBX");
     assertEq(dbx.decimals(), 18);
     assertEq(dbx.totalSupply(), 1e10 ether);
