@@ -66,13 +66,12 @@ contract TestDBXLookup is Test {
 
   function testLockManyTimes() public {
     uint256 amount = 100000 * 1e18;
-    uint256 releaseTimes = 10;
 
     oneLock(alice, amount, 1 hours, 10);
     oneLock(alice, amount, 1.5 hours, 5);
     oneLock(alice, amount, 3.1 hours, 8);
 
-    for (uint256 i = 0; i < releaseTimes; i++) {
+    for (uint256 i = 0; i < 8; i++) {
       skip(3.1 hours);
       oneRelease(alice, true);
       console.log("alice balance:", dbx.balanceOf(alice));
@@ -95,10 +94,6 @@ contract TestDBXLookup is Test {
       skip(interval);
       oneRelease(alice, true);
     }
-
-    // a little more
-    skip(interval);
-    oneRelease(alice, true);
 
     (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
     assertEq(releaseable, 0);
@@ -157,9 +152,9 @@ contract TestDBXLookup is Test {
     assertEq(balance, 33333 ether, "balance amount should be 33333 DBX");
 
     // need 10 times to release all
-    for (uint256 i = 0; i < 10; i++) {
-      skip(interval);
+    for (uint256 i = 0; i < 9; i++) {
       oneRelease(alice, true);
+      skip(interval);
     }
     (balance, releaseable) = lockup.balanceOf(alice);
     assertEq(releaseable, 0, "Releaseable amount should be 0.");
@@ -178,11 +173,29 @@ contract TestDBXLookup is Test {
     uint256 releaseTimes = 10;
 
     oneLock(alice, amount, interval, releaseTimes);
+
+    {
+      skip(2.5 hours);
+      (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
+      assertEq(releaseable, 10000 * 2 * 1e18);
+      assertEq(balance, amount);
+    }
+
+    {
+      skip(5.2 hours);
+      (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
+      assertEq(releaseable, 10000 * 7 * 1e18);
+      assertEq(balance, amount);
+
+      // release onece
+      oneRelease(alice, true);
+      (, uint256 releaseable2) = lockup.balanceOf(alice);
+      assertEq(releaseable2, 0, "Releaseable amount should be 0.");
+    }
+
     skip(360 days);
 
-    for (uint256 i = 0; i < releaseTimes; i++) {
-      oneRelease(alice, true);
-    }
+    oneRelease(alice, true);
     (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
     assertEq(releaseable, 0);
     assertEq(balance, 0);
