@@ -19,8 +19,8 @@ import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 contract DeboxSBT is ERC1155Supply, Ownable {
   using Strings for uint256;
 
-  string public constant name = "Debox Soulbound Token";
-  string public constant symbol = "DBXSBT";
+  string public constant name = "DeBox Soulbound Token";
+  string public constant symbol = "DeBoxSBT";
 
   string private _baseURI;
 
