@@ -2,16 +2,16 @@
 pragma solidity ^0.8.13;
 
 import { Test, console } from "forge-std/Test.sol";
-import { DeboxSBT } from "../src/DeboxSBT.sol";
+import { DeBoxSBT } from "../src/DeBoxSBT.sol";
 
 contract SBTTest is Test {
-  DeboxSBT sbt;
+  DeBoxSBT sbt;
 
   address admin = makeAddr("admin");
 
   function setUp() public {
     vm.prank(admin);
-    sbt = new DeboxSBT("https://data.debox.pro/nft/sbt/");
+    sbt = new DeBoxSBT("https://data.debox.pro/nft/sbt/");
   }
 
   function testAirdrop(uint256 count) public {
