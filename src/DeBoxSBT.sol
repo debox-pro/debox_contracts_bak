@@ -16,7 +16,7 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract DeboxSBT is ERC1155Supply, Ownable {
+contract DeBoxSBT is ERC1155Supply, Ownable {
   using Strings for uint256;
 
   string public constant name = "DeBox Soulbound Token";
@@ -29,7 +29,7 @@ contract DeboxSBT is ERC1155Supply, Ownable {
   }
 
   function uri(uint256 id) public view override returns (string memory) {
-    require(exists(id), "DeboxSBT: token not exist");
+    require(exists(id), "DeBoxSBT: token not exist");
     return bytes(_baseURI).length > 0 ? string.concat(_baseURI, id.toString()) : "";
   }
 
