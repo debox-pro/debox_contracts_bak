@@ -9,6 +9,9 @@ optimizer_runs = 2000
 
 fs_permissions = [{ access = "read-write", path = "./deployed.json"}]
 
+[rpc_endpoints]
+sepolia="https://1rpc.io/sepolia"
+base="https://1rpc.io/base"
 
 [fmt]
 line_length = 120

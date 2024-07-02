@@ -13,4 +13,8 @@ This is DeBox's public smart contract repository.
 
 | Chain | Contract | Address |
 |----|----|----|
-| Sepolia | DeboxSBT | 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496 |
+| Sepolia | DeboxSBT | 0xE157839cf20825B946ef7B6B708BD890065AD0BA |
+
+
+<!-- 0xe2F6A897f229c453cfb2B7De691Ad1969BCcc96E -->
+ 
