@@ -2,18 +2,18 @@
 pragma solidity ^0.8.13;
 
 import { Test, console } from "forge-std/Test.sol";
-import { DBXToken } from "../src/DBXToken.sol";
+import { DeBoxToken } from "../src/DeBoxToken.sol";
 
-contract DBXTest is Test {
-  DBXToken public dbx;
+contract BOXTest is Test {
+  DeBoxToken public dbx;
 
   function setUp() public {
-    dbx = new DBXToken();
+    dbx = new DeBoxToken();
   }
 
   function testInfo() public {
     assertEq(dbx.name(), "DeBoxToken");
-    assertEq(dbx.symbol(), "DBX");
+    assertEq(dbx.symbol(), "BOX");
     assertEq(dbx.decimals(), 18);
     assertEq(dbx.totalSupply(), 1e10 ether);
   }
@@ -24,7 +24,7 @@ contract DBXTest is Test {
     assertEq(dbx.balanceOf(bob), 100);
   }
 
-  function testDisableToDBX() public {
+  function testDisableToBOX() public {
     vm.expectRevert(abi.encodeWithSelector(ERC20InvalidReceiver.selector, address(dbx)));
     dbx.transfer(address(dbx), 100);
   }
