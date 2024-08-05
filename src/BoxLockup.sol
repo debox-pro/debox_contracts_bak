@@ -16,15 +16,15 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
- * @title DBXLockup is a contract to lock DBX for a period of time
+ * @title BOXLockup is a contract to lock BOX for a period of time
  * @author https://debox.pro/
- * @dev DBXLockup is a contract to lock DBX for a period of time, and release it by the beneficiary.
+ * @dev BOXLockup is a contract to lock BOX for a period of time, and release it by the beneficiary.
  * 1. the lock amount will be released by the beneficiary, and can't be released by the contract owner.
- * 2. if beneficiary loses the private key, the DBX will be locked forever!
+ * 2. if beneficiary loses the private key, the BOX will be locked forever!
  * 3. MUST accept lockup before lock. it can safely allow/disallow lockup to prevent new lockup, but can't disallow existing lockup.
  * 4. the lock amount will be transferred from msg.sender to this contract, and will be released by the beneficiary.
  */
-contract DBXLockup {
+contract BOXLockup {
   using SafeERC20 for IERC20;
 
   event Released(address indexed beneficiary, uint256 amount);
@@ -44,7 +44,7 @@ contract DBXLockup {
   }
 
   constructor(address _dbx) {
-    require(_dbx != address(0), "DBXLockup: invalid DBX address");
+    require(_dbx != address(0), "BOXLockup: invalid BOX address");
     dbx = IERC20(_dbx);
   }
 
@@ -68,29 +68,29 @@ contract DBXLockup {
    * @param ok is the flag to allow or disallow lockup
    */
   function acceptLockup(bool ok) external {
-    require(canLock[msg.sender] != ok, "DBXLockup: already set");
+    require(canLock[msg.sender] != ok, "BOXLockup: already set");
     canLock[msg.sender] = ok;
     emit AcceptLockup(msg.sender, ok);
   }
 
   /**
-   * @notice lock DBX
+   * @notice lock BOX
    * @dev the lock amount will be transferred from msg.sender to this contract, and will be released by the beneficiary.
-   * if beneficiary loses the private key, the DBX will be locked forever!
+   * if beneficiary loses the private key, the BOX will be locked forever!
    * @param beneficiary is the beneficiary address
-   * @param lockAmount is the amount of DBX to lock, MUST be greater than 10000 DBX
+   * @param lockAmount is the amount of BOX to lock, MUST be greater than 10000 BOX
    * @param interval is the interval of each release, in seconds, MUST be greater than 1 hour.
    * @param releaseTimes is the release times, MUST be greater than 1
    */
   function lock(address beneficiary, uint256 lockAmount, uint256 interval, uint256 releaseTimes) external {
-    require(canLock[beneficiary], "DBXLockup: not allowed to lock");
-    require(locked[beneficiary].length <= 16, "DBXLockup: lock limit reached"); // only allow 16 locks per address
-    require(interval >= 1 hours && interval <= 365 days, "DBXLockup: interval invalid");
-    require(releaseTimes >= 1 && releaseTimes * interval <= 5 * 365 days, "DBXLockup: release times invalid");
-    require(lockAmount >= 10000 * _ONE, "DBXLockup: lock amount too low");
+    require(canLock[beneficiary], "BOXLockup: not allowed to lock");
+    require(locked[beneficiary].length <= 16, "BOXLockup: lock limit reached"); // only allow 16 locks per address
+    require(interval >= 1 hours && interval <= 365 days, "BOXLockup: interval invalid");
+    require(releaseTimes >= 1 && releaseTimes * interval <= 5 * 365 days, "BOXLockup: release times invalid");
+    require(lockAmount >= 10000 * _ONE, "BOXLockup: lock amount too low");
 
     uint256 oneReleaseAmount = lockAmount / releaseTimes;
-    require(oneReleaseAmount >= _ONE, "DBXLockup: release amount too low");
+    require(oneReleaseAmount >= _ONE, "BOXLockup: release amount too low");
 
     // transfer
     dbx.safeTransferFrom(msg.sender, address(this), lockAmount);
@@ -110,7 +110,7 @@ contract DBXLockup {
 
   /**
    * @notice release the releaseable amount
-   * @dev only the beneficiary can release DBX.
+   * @dev only the beneficiary can release BOX.
    */
   function release() external {
     uint256 releaseable;
@@ -139,7 +139,7 @@ contract DBXLockup {
         }
       }
     }
-    require(releaseable > 0, "DBXLockup: no releaseable amount");
+    require(releaseable > 0, "BOXLockup: no releaseable amount");
     dbx.safeTransfer(beneficiary, releaseable);
     emit Released(beneficiary, releaseable);
   }

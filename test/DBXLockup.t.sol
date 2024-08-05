@@ -2,18 +2,18 @@
 pragma solidity ^0.8.13;
 
 import { Test, console } from "forge-std/Test.sol";
-import { DBXLockup } from "../src/DBXLockup.sol";
-import { DBXToken } from "../src/DBXToken.sol";
+import { BOXLockup } from "../src/BOXLockup.sol";
+import { DeBoxToken } from "../src/DeBoxToken.sol";
 
-contract TestDBXLookup is Test {
-  DBXLockup lockup;
+contract TestBOXLookup is Test {
+  BOXLockup lockup;
 
-  DBXToken dbx;
+  DeBoxToken dbx;
   address alice = makeAddr("alice");
 
   function setUp() public {
-    dbx = new DBXToken();
-    lockup = new DBXLockup(address(dbx));
+    dbx = new DeBoxToken();
+    lockup = new BOXLockup(address(dbx));
   }
 
   function testAllowLockup() public {
@@ -45,7 +45,7 @@ contract TestDBXLookup is Test {
 
     // will revert because no releaseable amount
     vm.prank(alice);
-    vm.expectRevert("DBXLockup: no releaseable amount");
+    vm.expectRevert("BOXLockup: no releaseable amount");
     lockup.release();
 
     // release
@@ -54,7 +54,7 @@ contract TestDBXLookup is Test {
 
     // will revert because no releaseable amount
     vm.prank(alice);
-    vm.expectRevert("DBXLockup: no releaseable amount");
+    vm.expectRevert("BOXLockup: no releaseable amount");
     lockup.release();
 
     // balance is zero
@@ -122,7 +122,7 @@ contract TestDBXLookup is Test {
 
     // will revert
     vm.prank(alice);
-    vm.expectRevert("DBXLockup: no releaseable amount");
+    vm.expectRevert("BOXLockup: no releaseable amount");
     lockup.release();
   }
 
@@ -133,7 +133,7 @@ contract TestDBXLookup is Test {
       vm.prank(who);
       lockup.release();
       uint256 dbxs2 = dbx.balanceOf(who);
-      assertEq(dbxs2, dbxs + releaseable, "DBX balance should be increased.");
+      assertEq(dbxs2, dbxs + releaseable, "BOX balance should be increased.");
     } else if (mustRelease) {
       revert("No releaseable amount.");
     }
@@ -149,7 +149,7 @@ contract TestDBXLookup is Test {
     skip(interval);
     (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
     assertEq(releaseable, 3703666666666666666666);
-    assertEq(balance, 33333 ether, "balance amount should be 33333 DBX");
+    assertEq(balance, 33333 ether, "balance amount should be 33333 BOX");
 
     // need 10 times to release all
     for (uint256 i = 0; i < 9; i++) {
@@ -163,7 +163,7 @@ contract TestDBXLookup is Test {
 
     // will revert
     vm.prank(alice);
-    vm.expectRevert("DBXLockup: no releaseable amount");
+    vm.expectRevert("BOXLockup: no releaseable amount");
     lockup.release();
   }
 
@@ -202,7 +202,7 @@ contract TestDBXLookup is Test {
     assertEq(dbx.balanceOf(alice), amount);
   }
 
-  // lock DBX
+  // lock BOX
   function oneLock(address to, uint256 amount, uint256 interval, uint256 releaseTimes) public {
     if (lockup.canLock(to) == false) {
       vm.prank(to);
@@ -221,6 +221,6 @@ contract TestDBXLookup is Test {
     assertEq(releaseable2, releaseable, "Releaseable amount should be increased.");
 
     uint256 dbxs2 = dbx.balanceOf(address(lockup));
-    assertEq(dbxs2, dbxs + amount, "DBX balance should be increased.");
+    assertEq(dbxs2, dbxs + amount, "BOX balance should be increased.");
   }
 }
