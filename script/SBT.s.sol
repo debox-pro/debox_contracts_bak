@@ -16,7 +16,7 @@ contract SBTScript is Script {
 
     console.log("SBT deployed at:", address(sbt));
 
-    vm.stopBroadcast();bitlayer
+    vm.stopBroadcast();
 
     writeAddr(".sbt", address(sbt));
   }

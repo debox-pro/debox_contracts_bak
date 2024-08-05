@@ -14,12 +14,12 @@ pragma solidity 0.8.25;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 /**
- * @title DBXToken
+ * @title DeBoxToken
  * @author https://debox.pro/
- * @notice DBXToken is an ERC20 token with permit. It is the governance token of the DeBox platform.
+ * @notice DeBoxToken is an ERC20 token with permit. It is the governance token of the DeBox platform.
  */
-contract DBXToken is ERC20Permit {
-  constructor() ERC20Permit("DeBoxToken") ERC20("DeBoxToken", "DBX") {
+contract DeBoxToken is ERC20Permit {
+  constructor() ERC20Permit("DeBoxToken") ERC20("DeBoxToken", "BOX") {
     _mint(0x2745F97f501087caF8eA740854Cfcac011fb34C3, 5.5e9 ether); // 5.5 billion
     _mint(0x5b1AfdB8C23569484773aF7bD4c98Af9ee7599D9, 0.5e9 ether);
     _mint(msg.sender, 4e9 ether);
