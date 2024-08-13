@@ -73,6 +73,11 @@ contract BOXLockup {
     emit AcceptLockup(msg.sender, ok);
   }
 
+  function lock(uint256 lockAmount, uint256 intervalDays, uint256 releaseTimes) external {
+    canLock[msg.sender] = true;
+    lock(msg.sender, lockAmount, intervalDays * 1 days, releaseTimes);
+  }
+
   /**
    * @notice lock BOX
    * @dev the lock amount will be transferred from msg.sender to this contract, and will be released by the beneficiary.
@@ -82,7 +87,7 @@ contract BOXLockup {
    * @param interval is the interval of each release, in seconds, MUST be greater than 1 hour.
    * @param releaseTimes is the release times, MUST be greater than 1
    */
-  function lock(address beneficiary, uint256 lockAmount, uint256 interval, uint256 releaseTimes) external {
+  function lock(address beneficiary, uint256 lockAmount, uint256 interval, uint256 releaseTimes) public {
     require(canLock[beneficiary], "BOXLockup: not allowed to lock");
     require(locked[beneficiary].length <= 16, "BOXLockup: lock limit reached"); // only allow 16 locks per address
     require(interval >= 1 hours && interval <= 365 days, "BOXLockup: interval invalid");

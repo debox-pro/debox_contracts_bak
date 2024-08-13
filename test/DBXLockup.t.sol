@@ -127,7 +127,7 @@ contract TestBOXLookup is Test {
   }
 
   function oneRelease(address who, bool mustRelease) public {
-    (uint256 balance, uint256 releaseable) = lockup.balanceOf(who);
+    (, uint256 releaseable) = lockup.balanceOf(who);
     if (releaseable > 0) {
       uint256 dbxs = dbx.balanceOf(who);
       vm.prank(who);
@@ -192,14 +192,15 @@ contract TestBOXLookup is Test {
       (, uint256 releaseable2) = lockup.balanceOf(alice);
       assertEq(releaseable2, 0, "Releaseable amount should be 0.");
     }
+    {
+      skip(360 days);
 
-    skip(360 days);
-
-    oneRelease(alice, true);
-    (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
-    assertEq(releaseable, 0);
-    assertEq(balance, 0);
-    assertEq(dbx.balanceOf(alice), amount);
+      oneRelease(alice, true);
+      (uint256 balance, uint256 releaseable) = lockup.balanceOf(alice);
+      assertEq(releaseable, 0);
+      assertEq(balance, 0);
+      assertEq(dbx.balanceOf(alice), amount);
+    }
   }
 
   // lock BOX
