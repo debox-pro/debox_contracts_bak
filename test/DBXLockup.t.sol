@@ -14,6 +14,9 @@ contract TestBOXLookup is Test {
   function setUp() public {
     dbx = new DeBoxToken();
     lockup = new BOXLockup(address(dbx));
+
+    vm.prank(0x37C8C7166B3ADCb1F58c1036d0272FbcD90D87Ea);
+    dbx.transfer(address(this), 350_000_000 ether);
   }
 
   function testAllowLockup() public {
@@ -84,7 +87,7 @@ contract TestBOXLookup is Test {
   }
 
   function testLock12Months() public {
-    uint256 amount = 2e9 ether;
+    uint256 amount = 350_000_000 ether;
     uint256 interval = 30 days;
     uint256 releaseTimes = 12;
 
