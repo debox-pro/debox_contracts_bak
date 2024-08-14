@@ -65,7 +65,6 @@ contract TestBoxOFT is TestHelperOz5 {
     boxOFTAdapter = new DeBoxTokenOFTAdapter(admin, address(box), address(endpoints[aEid]));
     console.log("boxOFTAdapter: ", address(boxOFTAdapter));
     bOFT = new DeBoxTokenOFT(admin, address(endpoints[bEid]));
-    box.transfer(alice, initialBalance);
 
     // config and wire the ofts
     address[] memory ofts = new address[](2);
@@ -74,6 +73,9 @@ contract TestBoxOFT is TestHelperOz5 {
     wireOApps(ofts);
 
     vm.stopPrank();
+
+    vm.prank(0x37C8C7166B3ADCb1F58c1036d0272FbcD90D87Ea);
+    box.transfer(alice, initialBalance);
   }
 
   function test_constructor() public {

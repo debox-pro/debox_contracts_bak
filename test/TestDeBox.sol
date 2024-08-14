@@ -9,13 +9,15 @@ contract BOXTest is Test {
 
   function setUp() public {
     dbx = new DeBoxToken();
+    vm.prank(0x37C8C7166B3ADCb1F58c1036d0272FbcD90D87Ea);
+    dbx.transfer(address(this), 350_000_000 ether);
   }
 
   function testInfo() public {
     assertEq(dbx.name(), "DeBoxToken");
     assertEq(dbx.symbol(), "BOX");
     assertEq(dbx.decimals(), 18);
-    assertEq(dbx.totalSupply(), 1e10 ether);
+    assertEq(dbx.totalSupply(), 1e9 ether);
   }
 
   function testTransfer() public {
