@@ -46,6 +46,10 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
     uint256 nextReleaseAt;
   }
 
+  constructor() {
+    _disableInitializers();
+  }
+
   // Initializer function instead of constructor
   function initialize(IERC20 _box) public initializer {
     require(address(_box) != address(0), "BOXLockup: invalid BOX address");

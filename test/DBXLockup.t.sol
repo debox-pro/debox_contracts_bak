@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import { Test, console } from "forge-std/Test.sol";
 import "../src/BOXLockup.sol";
 import { DeBoxToken } from "../src/DeBoxToken.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract TestBOXLookup is Test {
   BOXLockup lockup;
@@ -13,8 +14,10 @@ contract TestBOXLookup is Test {
 
   function setUp() public {
     dbx = new DeBoxToken();
-    lockup = new BOXLockup();
-    lockup.initialize(IERC20(address(dbx)));
+
+    BOXLockup impl = new BOXLockup();
+    ERC1967Proxy proxy = new ERC1967Proxy(address(impl), abi.encodeWithSignature("initialize(address)", address(dbx)));
+    lockup = BOXLockup(address(proxy));
 
     vm.prank(0x37C8C7166B3ADCb1F58c1036d0272FbcD90D87Ea);
     dbx.transfer(address(this), 350_000_000 ether);
