@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { Test, console } from "forge-std/Test.sol";
-import { BOXLockup } from "../src/BOXLockup.sol";
+import "../src/BOXLockup.sol";
 import { DeBoxToken } from "../src/DeBoxToken.sol";
 
 contract TestBOXLookup is Test {
@@ -13,7 +13,8 @@ contract TestBOXLookup is Test {
 
   function setUp() public {
     dbx = new DeBoxToken();
-    lockup = new BOXLockup(address(dbx));
+    lockup = new BOXLockup();
+    lockup.initialize(IERC20(address(dbx)));
 
     vm.prank(0x37C8C7166B3ADCb1F58c1036d0272FbcD90D87Ea);
     dbx.transfer(address(this), 350_000_000 ether);

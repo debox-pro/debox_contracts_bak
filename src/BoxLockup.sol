@@ -15,6 +15,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 /**
  * @title BOXLockup is a contract to lock BOX for a period of time
  * @author https://debox.pro/
@@ -24,7 +27,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * 3. MUST accept lockup before lock. it can safely allow/disallow lockup to prevent new lockup, but can't disallow existing lockup.
  * 4. the lock amount will be transferred from msg.sender to this contract, and will be released by the beneficiary.
  */
-contract BOXLockup {
+contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
   using SafeERC20 for IERC20;
 
   event Released(address indexed beneficiary, uint256 amount);
@@ -32,7 +35,7 @@ contract BOXLockup {
   event AcceptLockup(address indexed beneficiary, bool ok);
 
   uint256 private constant _ONE = 1e18;
-  IERC20 public immutable dbx;
+  IERC20 public box;
   mapping(address => Lock[]) public locked;
   mapping(address => bool) public canLock;
 
@@ -43,9 +46,16 @@ contract BOXLockup {
     uint256 nextReleaseAt;
   }
 
-  constructor(address _dbx) {
-    require(_dbx != address(0), "BOXLockup: invalid BOX address");
-    dbx = IERC20(_dbx);
+  // Initializer function instead of constructor
+  function initialize(IERC20 _box) public initializer {
+    require(address(_box) != address(0), "BOXLockup: invalid BOX address");
+    __Ownable_init(msg.sender);
+    __UUPSUpgradeable_init();
+    box = _box;
+  }
+
+  function _authorizeUpgrade(address) internal view override {
+    _checkOwner();
   }
 
   /**
@@ -98,7 +108,7 @@ contract BOXLockup {
     require(oneReleaseAmount >= _ONE, "BOXLockup: release amount too low");
 
     // transfer
-    dbx.safeTransferFrom(msg.sender, address(this), lockAmount);
+    box.safeTransferFrom(msg.sender, address(this), lockAmount);
 
     // add lock
     locked[beneficiary].push(
@@ -145,7 +155,7 @@ contract BOXLockup {
       }
     }
     require(releaseable > 0, "BOXLockup: no releaseable amount");
-    dbx.safeTransfer(beneficiary, releaseable);
+    box.safeTransfer(beneficiary, releaseable);
     emit Released(beneficiary, releaseable);
   }
 
