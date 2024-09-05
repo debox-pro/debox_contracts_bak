@@ -25,19 +25,34 @@ contract TestBOXLookup is Test {
 
   function testAllowLockup() public {
     vm.prank(alice);
-    lockup.acceptLockup(true);
-    bool allow = lockup.canLock(alice);
+    lockup.acceptLockup(address(this), true);
+    bool allow = lockup.canLock(alice, address(this));
     assertTrue(allow, "Allow lockup should be true.");
 
     vm.prank(alice);
-    lockup.acceptLockup(false);
-    allow = lockup.canLock(alice);
+    lockup.acceptLockup(address(this), false);
+    allow = lockup.canLock(alice, address(this));
     assertTrue(!allow, "Allow lockup should be false.");
+  }
+
+  function testAlicCannotLockForMeBeforeAccept() public {
+    dbx.transfer(alice, 10000 * 1e18);
+
+    address me = makeAddr("me");
+    vm.prank(alice);
+    vm.expectRevert("BOXLockup: not allowed to lock");
+    lockup.lock(me, 10000 * 1e18, 1 days, 10);
+
+    // can lock after accept
+
+    vm.prank(me);
+    lockup.acceptLockup(alice, true);
+    oneLock(alice, me, 10000 * 1e18, 1 days, 10);
   }
 
   function testLock() public {
     uint256 amount = 100000 * 1e18;
-    uint256 interval = 1 hours;
+    uint256 interval = 1 days;
     uint256 releaseTimes = 10;
 
     oneLock(alice, amount, interval, releaseTimes);
@@ -46,7 +61,7 @@ contract TestBOXLookup is Test {
 
   function testLockOne() public {
     uint256 amount = 100000 * 1e18;
-    uint256 interval = 1 hours;
+    uint256 interval = 1 days;
     uint256 releaseTimes = 1;
     oneLock(alice, amount, interval, releaseTimes);
 
@@ -116,7 +131,7 @@ contract TestBOXLookup is Test {
 
     // unlock
     vm.prank(alice);
-    lockup.acceptLockup(false); // disallow lock，but can release
+    lockup.acceptLockup(address(this), false); // disallow lock，but can release
 
     for (uint256 i = 0; i < releaseTimes; i++) {
       skip(interval);
@@ -210,19 +225,25 @@ contract TestBOXLookup is Test {
     }
   }
 
-  // lock BOX
   function oneLock(address to, uint256 amount, uint256 interval, uint256 releaseTimes) public {
-    if (lockup.canLock(to) == false) {
+    if (lockup.canLock(to, address(this)) == false) {
       vm.prank(to);
-      lockup.acceptLockup(true);
+      lockup.acceptLockup(address(this), true);
     }
+    oneLock(address(this), to, amount, interval, releaseTimes);
+  }
+  // lock BOX
 
+  function oneLock(address from, address to, uint256 amount, uint256 interval, uint256 releaseTimes) public {
+    vm.startPrank(from);
     dbx.approve(address(lockup), amount);
 
     uint256 dbxs = dbx.balanceOf(address(lockup));
     (uint256 total, uint256 releaseable) = lockup.balanceOf(to);
 
     lockup.lock(to, amount, interval, releaseTimes);
+
+    vm.stopPrank();
 
     (uint256 total2, uint256 releaseable2) = lockup.balanceOf(to);
     assertEq(total2, total + amount, "Total locked amount should be increased.");

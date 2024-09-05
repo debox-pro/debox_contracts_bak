@@ -32,12 +32,12 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
 
   event Released(address indexed beneficiary, uint256 amount);
   event Lockup(address indexed beneficiary, uint256 amount, uint256 interval, uint256 releaseTimes);
-  event AcceptLockup(address indexed beneficiary, bool ok);
+  event AcceptLockup(address indexed beneficiary, address locker, bool ok);
 
   uint256 private constant _ONE = 1e18;
   IERC20 public box;
   mapping(address => Lock[]) public locked;
-  mapping(address => bool) public canLock;
+  mapping(address => mapping(address => bool)) public canLock;
 
   struct Lock {
     uint256 lockAmount;
@@ -81,14 +81,13 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
    * @dev it can safely allow/disallow lockup to prevent new lockup, but can't disallow existing lockup.
    * @param ok is the flag to allow or disallow lockup
    */
-  function acceptLockup(bool ok) external {
-    require(canLock[msg.sender] != ok, "BOXLockup: already set");
-    canLock[msg.sender] = ok;
-    emit AcceptLockup(msg.sender, ok);
+  function acceptLockup(address locker, bool ok) external {
+    require(canLock[msg.sender][locker] != ok, "BOXLockup: already set");
+    canLock[msg.sender][locker] = ok;
+    emit AcceptLockup(msg.sender, locker, ok);
   }
 
   function lock(uint256 lockAmount, uint256 intervalDays, uint256 releaseTimes) external {
-    canLock[msg.sender] = true;
     lock(msg.sender, lockAmount, intervalDays * 1 days, releaseTimes);
   }
 
@@ -102,7 +101,7 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
    * @param releaseTimes is the release times, MUST be greater than 1
    */
   function lock(address beneficiary, uint256 lockAmount, uint256 interval, uint256 releaseTimes) public {
-    require(canLock[beneficiary], "BOXLockup: not allowed to lock");
+    require(beneficiary == msg.sender || canLock[beneficiary][msg.sender], "BOXLockup: not allowed to lock");
     require(locked[beneficiary].length <= 16, "BOXLockup: lock limit reached"); // only allow 16 locks per address
     require(interval >= 1 hours && interval <= 365 days, "BOXLockup: interval invalid");
     require(releaseTimes > 0 && releaseTimes * interval <= 6 * 365 days, "BOXLockup: release times invalid");
