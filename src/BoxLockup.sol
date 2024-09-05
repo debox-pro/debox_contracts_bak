@@ -145,17 +145,6 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
         item.lockAmount -= ant;
         uint256 releaseTimes = (block.timestamp - item.nextReleaseAt) / item.interval + 1;
         item.nextReleaseAt += releaseTimes * item.interval;
-
-        // remove empty lock,but keep the first one.
-        if (item.lockAmount == 0 && i > 0) {
-          if (i == locked[beneficiary].length - 1) {
-            locked[beneficiary].pop();
-          } else {
-            locked[beneficiary][i] = locked[beneficiary][locked[beneficiary].length - 1];
-            locked[beneficiary].pop();
-            i--;
-          }
-        }
       }
     }
     require(releaseable > 0, "BOXLockup: no releaseable amount");
