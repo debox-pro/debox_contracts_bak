@@ -76,32 +76,20 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  /**
-   * @notice beneficiary can allow or disallow lockup
-   * @dev it can safely allow/disallow lockup to prevent new lockup, but can't disallow existing lockup.
-   * @param ok is the flag to allow or disallow lockup
-   */
-  function acceptLockup(address locker, bool ok) external {
-    require(canLock[msg.sender][locker] != ok, "BOXLockup: already set");
-    canLock[msg.sender][locker] = ok;
-    emit AcceptLockup(msg.sender, locker, ok);
-  }
-
-  function lock(uint256 lockAmount, uint256 intervalDays, uint256 releaseTimes) external {
-    lock(msg.sender, lockAmount, intervalDays * 1 days, releaseTimes);
+  function lockWithDays(uint256 lockAmount, uint256 intervalDays, uint256 releaseTimes) external {
+    lock(lockAmount, intervalDays * 1 days, releaseTimes);
   }
 
   /**
    * @notice lock BOX
    * @dev the lock amount will be transferred from msg.sender to this contract, and will be released by the beneficiary.
-   * if beneficiary loses the private key, the BOX will be locked forever!
-   * @param beneficiary is the beneficiary address
+   * if msg.sender loses the private key, the BOX will be locked forever!
    * @param lockAmount is the amount of BOX to lock, MUST be greater than 10000 BOX
    * @param interval is the interval of each release, in seconds, MUST be greater than 1 hour.
    * @param releaseTimes is the release times, MUST be greater than 1
    */
-  function lock(address beneficiary, uint256 lockAmount, uint256 interval, uint256 releaseTimes) public {
-    require(beneficiary == msg.sender || canLock[beneficiary][msg.sender], "BOXLockup: not allowed to lock");
+  function lock(uint256 lockAmount, uint256 interval, uint256 releaseTimes) public {
+    address beneficiary = msg.sender;
     require(locked[beneficiary].length <= 16, "BOXLockup: lock limit reached"); // only allow 16 locks per address
     require(interval >= 1 hours && interval <= 365 days, "BOXLockup: interval invalid");
     require(releaseTimes > 0 && releaseTimes * interval <= 6 * 365 days, "BOXLockup: release times invalid");

@@ -23,33 +23,6 @@ contract TestBOXLookup is Test {
     dbx.transfer(address(this), 350_000_000 ether);
   }
 
-  function testAllowLockup() public {
-    vm.prank(alice);
-    lockup.acceptLockup(address(this), true);
-    bool allow = lockup.canLock(alice, address(this));
-    assertTrue(allow, "Allow lockup should be true.");
-
-    vm.prank(alice);
-    lockup.acceptLockup(address(this), false);
-    allow = lockup.canLock(alice, address(this));
-    assertTrue(!allow, "Allow lockup should be false.");
-  }
-
-  function testAlicCannotLockForMeBeforeAccept() public {
-    dbx.transfer(alice, 10000 * 1e18);
-
-    address me = makeAddr("me");
-    vm.prank(alice);
-    vm.expectRevert("BOXLockup: not allowed to lock");
-    lockup.lock(me, 10000 * 1e18, 1 days, 10);
-
-    // can lock after accept
-
-    vm.prank(me);
-    lockup.acceptLockup(alice, true);
-    oneLock(alice, me, 10000 * 1e18, 1 days, 10);
-  }
-
   function testLock() public {
     uint256 amount = 100000 * 1e18;
     uint256 interval = 1 days;
@@ -128,10 +101,6 @@ contract TestBOXLookup is Test {
     uint256 releaseTimes = 10;
 
     oneLock(alice, amount, interval, releaseTimes);
-
-    // unlock
-    vm.prank(alice);
-    lockup.acceptLockup(address(this), false); // disallow lock，but can release
 
     for (uint256 i = 0; i < releaseTimes; i++) {
       skip(interval);
@@ -225,23 +194,19 @@ contract TestBOXLookup is Test {
     }
   }
 
-  function oneLock(address to, uint256 amount, uint256 interval, uint256 releaseTimes) public {
-    if (lockup.canLock(to, address(this)) == false) {
-      vm.prank(to);
-      lockup.acceptLockup(address(this), true);
-    }
-    oneLock(address(this), to, amount, interval, releaseTimes);
-  }
   // lock BOX
 
-  function oneLock(address from, address to, uint256 amount, uint256 interval, uint256 releaseTimes) public {
+  function oneLock(address from, uint256 amount, uint256 interval, uint256 releaseTimes) public {
+    dbx.transfer(from, amount);
+
+    address to = from;
     vm.startPrank(from);
     dbx.approve(address(lockup), amount);
 
     uint256 dbxs = dbx.balanceOf(address(lockup));
     (uint256 total, uint256 releaseable) = lockup.balanceOf(to);
 
-    lockup.lock(to, amount, interval, releaseTimes);
+    lockup.lock(amount, interval, releaseTimes);
 
     vm.stopPrank();
 
