@@ -105,7 +105,7 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
     require(canLock[beneficiary], "BOXLockup: not allowed to lock");
     require(locked[beneficiary].length <= 16, "BOXLockup: lock limit reached"); // only allow 16 locks per address
     require(interval >= 1 hours && interval <= 365 days, "BOXLockup: interval invalid");
-    require(releaseTimes >= 1 && releaseTimes * interval <= 5 * 365 days, "BOXLockup: release times invalid");
+    require(releaseTimes > 0 && releaseTimes * interval <= 6 * 365 days, "BOXLockup: release times invalid");
     require(lockAmount >= 10000 * _ONE, "BOXLockup: lock amount too low");
 
     uint256 oneReleaseAmount = lockAmount / releaseTimes;
