@@ -37,7 +37,6 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
   uint256 private constant _ONE = 1e18;
   IERC20 public box;
   mapping(address => Lock[]) public locked;
-  mapping(address => mapping(address => bool)) public canLock;
 
   struct Lock {
     uint256 lockAmount;
