@@ -8,6 +8,7 @@ This is DeBox's public smart contract repository.
 |----|----|----|
 | Base | DeboxSBT | [0xceADD34edBa6f9FA1c9Bb683d11610D1D6834Fe6](https://basescan.org/address/0xceADD34edBa6f9FA1c9Bb683d11610D1D6834Fe6) |
 | Mantle | DeBoxSBT | 0xceADD34edBa6f9FA1c9Bb683d11610D1D6834Fe6 |
+| Ethereum  | DeBoxToken(BOX) | [0x32B77729cD87F1EF2bEa4C650c16f89f08472c69](https://etherscan.io/token/0x32B77729cD87F1EF2bEa4C650c16f89f08472c69) |
 
 ## Testnet contracts
 
