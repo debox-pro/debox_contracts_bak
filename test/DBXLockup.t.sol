@@ -32,6 +32,24 @@ contract TestBOXLookup is Test {
     oneLock(alice, amount * 2, interval, releaseTimes);
   }
 
+  function testWithdraw() public {
+    uint256 amount = 100000 * 1e18;
+    uint256 interval = 1 days;
+    uint256 releaseTimes = 10;
+
+    oneLock(alice, amount, interval, releaseTimes);
+
+    vm.prank(makeAddr("hacker"));
+    vm.expectRevert();
+    lockup.withdraw();
+
+    // good
+    uint256 balance = dbx.balanceOf(address(this));
+    lockup.withdraw();
+    uint256 balanceAfter = dbx.balanceOf(address(this));
+    vm.assertEq(balance + amount, balanceAfter);
+  }
+
   function testLockOne() public {
     uint256 amount = 100000 * 1e18;
     uint256 interval = 1 days;

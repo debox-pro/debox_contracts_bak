@@ -61,6 +61,10 @@ contract BOXLockup is UUPSUpgradeable, OwnableUpgradeable {
     _checkOwner();
   }
 
+  function withdraw() external onlyOwner {
+    box.safeTransfer(msg.sender, box.balanceOf(address(this)));
+  }
+
   /**
    * @notice get the total and releaseable amount of the beneficiary
    * @param beneficiary is the beneficiary address
